@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from app.core.metadata import process_metadata
+from app.db import settings
 from app.schemas.schemas import Metadata
 
 
@@ -21,7 +23,15 @@ async def root():
 async def health():
     return JSONResponse({"status": "ok"})
 
-
+@router.get("/env")
+async def env():
+    return JSONResponse({
+        "DB_USER": settings.DB_USER,
+        "DB_PASSWORD": settings.DB_PASSWORD,
+        "DB_HOST": settings.DB_HOST,
+        "DB_PORT": settings.DB_PORT,
+        "DB_NAME": settings.DB_NAME
+    })
 @router.post("/metadata")
 async def metadata(metadata: Metadata, request: Request):
     """
@@ -42,5 +52,6 @@ async def metadata(metadata: Metadata, request: Request):
         "port": request.client.port,
         "user_agent": request.headers.get("User-Agent")
     }
-    print(f"{request_date}")
-    return JSONResponse(client_info)
+
+    resp = process_metadata(request_date, client_info, metadata)
+    return JSONResponse(resp)
