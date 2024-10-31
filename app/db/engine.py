@@ -35,6 +35,9 @@ def insert_metadata(user_id: str,
                     date_created: str, 
                     metadata: dict,
                     contract_url: Optional[str], 
+                    client_ip: Optional[str], 
+                    client_port: Optional[int], 
+                    client_user_agent: Optional[str]
                     ):
     engine = create_engine_and_session()
     metadata_str = json.dumps(metadata)
@@ -43,7 +46,10 @@ def insert_metadata(user_id: str,
         contract_name=contract_name,
         date_created=date_created,
         metadata=metadata_str,
-        contract_url=contract_url
+        contract_url=contract_url,
+        client_ip=client_ip,
+        client_port=client_port,
+        client_user_agent=client_user_agent
     )
     with engine.connect() as conn:
         conn.execute(stmt)
