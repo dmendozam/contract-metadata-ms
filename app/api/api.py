@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 async def root():
     return {"message": "Server is Working"}
 
@@ -25,7 +25,7 @@ async def health():
 
 
 @router.post("/metadata")
-async def metadata(metadata: Metadata, request: Request):
+async def metadata(metadata: Metadata):
     """
     Retrieves the metadata from the contract and writes
     it to the database.
@@ -38,12 +38,20 @@ async def metadata(metadata: Metadata, request: Request):
     Returns:
         JSONResponse: response from the server
     """
-    request_date = datetime.now(tz=timezone.utc).isoformat()
-    client_info = {
-        "host": request.client.host,
-        "port": request.client.port,
-        "user_agent": request.headers.get("User-Agent")
-    }
+    try:
+        request_date = datetime.now(tz=timezone.utc).isoformat()
+        # TODO How can we get the ip and host from the client
+        client_info = {
+            "host": "Null",
+            "port": 0,
+            "user_agent": "Null"
+        }
 
-    resp = process_metadata(request_date, client_info, metadata)
-    return JSONResponse(resp)
+        insert_res = process_metadata(request_date, client_info, metadata)
+        resp = {"message": insert_res}
+        status_code = 200
+    except Exception as e:
+        resp = {"error": "There was an error processing the metadata",
+                "metadata": metadata.__dict__}
+        status_code = 500
+    return JSONResponse(resp, status_code=status_code)
