@@ -23,6 +23,16 @@ async def root():
 async def health():
     return JSONResponse({"status": "ok"})
 
+@router.get("/environment")
+async def get_environment(request: Request):
+    env = {
+        "DB_USER": settings.DB_USER,
+        "DB_PASSWORD": settings.DB_PASSWORD,
+        "DB_HOST": settings.DB_HOST,
+        "DB_PORT": settings.DB_PORT,
+        "DB_NAME": settings.DB_NAME
+    }
+    return JSONResponse(env, status_code=200)
 
 @router.post("/metadata")
 async def metadata(metadata: Metadata):
