@@ -9,6 +9,7 @@ uvicorn = "*"
 sqlalchemy = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+azure-functions = "*"
 
 [dev-packages]
 
